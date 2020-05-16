@@ -6,7 +6,7 @@ I noticed a few url's with files... nac_downloader just downloads the available 
 
 Usage:
 
-  `from numismatica_ars_classica import nac_downloader`
+  `from numismatica_ars_classica import nac_downloader`  
   `nac_downloader()`
 
   Edit the code for your download folder.
