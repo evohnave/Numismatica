@@ -5,9 +5,8 @@
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/items.html
 
-from scrapy import item, Field
+from scrapy.item import Field, Item
 
-
-class NomosItem(scrapy.Item):
+class NomosItem(Item):
     # Primary fields
-    ctls = []
+    ctls = {}

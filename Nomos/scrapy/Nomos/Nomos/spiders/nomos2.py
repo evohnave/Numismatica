@@ -15,7 +15,7 @@ BASE_URL = 'https://nomosag.com'
 
 class NomosSpider(scrapy.Spider):
     ''' Class for scraping Nomos Auction Results '''
-    name = "auction_results"
+    name = "auction_results2"
     allowed_domains = ["web"]
     start_urls = (
             NOMOS,
@@ -25,23 +25,22 @@ class NomosSpider(scrapy.Spider):
         ''' parses response '''
         item = Item()
         loader = ItemLoader(item=item, response=response)
-        item.fields['url'] = Field()
-        loader.add_value('url', NOMOS)
-        item.fields['base'] = Field()
-        loader.add_value('base', BASE_URL)
         ctls = findall(r'(ctl\d{2})_lblDescription', str(response.text))
         self.log(f"\nThere are {len(ctls)} items.\n")
+        item.fields['ctls'] = Field()
+        item.fields['urls'] = Field()
+        item.fields['descr'] = Field()
+        item.fields['date'] = Field()
+        item.fields['loc'] = Field()
         for ctl in ctls:
             xpth = '//*[(@id = "' + ctl + '_lblDescription")]'
-            item.fields[ctl] = Field()
-            loader.add_xpath(ctl, xpth)
-            item.fields[ctl+'_url'] = Field()
+            loader.add_xpath('ctls', xpth)
             xapth = xpth + '//a/@href'
-            loader.add_xpath(ctl + '_url', xapth)
-            item.fields[ctl + '_date_loc'] = Field()
-            xpath = xpth + '[1]/text()'
-            loader.add_xpath(ctl + '_date_loc', xpath)
-            item.fields[ctl + '_descr'] = Field()
+            loader.add_xpath('urls', xapth)
+            xpath = xpth + '[1]/text()[1]'
+            loader.add_xpath('date', xpath)
+            xpath = xpth + '[1]/text()[2]'
+            loader.add_xpath('loc', xpath)
             xpath = xpth + '/b[1]/text()'
-            loader.add_xpath(ctl + '_descr', xpath)
+            loader.add_xpath('descr', xpath)
         return loader.load_item()
