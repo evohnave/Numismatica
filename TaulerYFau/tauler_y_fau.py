@@ -17,6 +17,9 @@ lot1img = 'img/thumbs/700/001/997/001-997-27_01.jpg'
 all_coins = 'https://www.tauleryfau.com/en/auctions/all-categories?_token=iNfGYfH8AQgptPuIWd9rXpWeJCxvQ6ROnW1p9VZY&s=2141&order=ref&total=603&reference=&description='
 all_no_token = 'https://www.tauleryfau.com/en/auctions/all-categories?s=2141&order=ref&total=603&reference=&description='
 
+
+lot2 = 'https://www.tauleryfau.com/en/lot/24062020-2141-2141/2-997-greek-coins'
+lot1 = 'https://www.tauleryfau.com/en/lot/24062020-2141-2141/1-997-greek-coins'
 #  Tauler y Fau has all their coins available at all_no_token
 #  Each lot is at https://www.tauleryfau.com/en/lot/<auction id>/lot#-###-category
 #    The lot can be read from the main page all_no_token
@@ -30,12 +33,13 @@ r.status_code
 soup = BeautifulSoup(r.text, 'html.parser')
 
 lot_pattern = r'Lot\s+(\d{1,4})'
-lot_no_pattern = r'/(\d{1,4})-.*$'
-columns = ['Lot', 'Link']
+lot_no_pattern = r'\/(\d{1,4})-.*$'
+category_pattern = r'\/\d{1,4}-\d{1,4}-(.*$)'
+columns = ['Lot', 'Link', 'Category']
 
 tyf = pd.DataFrame(columns=columns)
 
-for n, item in enumerate(soup.find_all('div')):
+for item in soup.find_all('div'):
     # The items we want are in lot-large-block-content
     if item.has_attr('class'):
         if 'lot-large-block-content' in item['class']:
@@ -58,14 +62,20 @@ for n, item in enumerate(soup.find_all('div')):
                 else:
                     lot = -1
                     break
+                # Get category from link
+                category = re.search(category_pattern, link)
+                if category:
+                    category = category.groups()[0]
+                else:
+                    category = "Not listed"
                 # add to df
-                row = pd.DataFrame([[lot, link]], columns=columns)
+                row = pd.DataFrame([[lot, link, category]], columns=columns)
                 
                 tyf = tyf.append(row)
 
 
 
-del( columns,link,lot,lot_no_pattern, lot_pattern, n,row, tyf)
+del( columns,link,lot,lot_no_pattern, lot_pattern, row, tyf)
 
 
 
