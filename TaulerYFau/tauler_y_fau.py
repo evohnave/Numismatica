@@ -76,6 +76,59 @@ for item in soup.find_all('div'):
 
 
 del( columns,link,lot,lot_no_pattern, lot_pattern, row, tyf)
+img_pattern = r'https.*\.jpg'
+
+r = requests.get(lot2)
+
+r.status_code
+
+soup = BeautifulSoup(r.text, 'html.parser')
+
+picture_links = set()
+
+for item in soup.find_all('div', class_='item_content_img_single'):
+    for link in item.find_all('img'):
+        picture_links.add(link.get('src'))
+    
+import json
+
+for item in soup.find_all('script', attrs={"type": "application/ld+json"}):
+#    print(item)
+#    print ("\n\n\n")
+#    print(f"{dir(item)}")
+#    print ("\n\n\n")
+#    print(item.contents)
+    print("\n\n\n Item Contents as json?")
+    b = json.loads(item.contents[0])
+    print(b)
+    print ("\n\n\n")    
+    print(b['image'])
+    print ("\n\n\n")
+    print(b['description'])
+    print ("\n\n\n")
+    print(b['description'])
+    print ("\n\n\n")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
