@@ -73,7 +73,7 @@ for item in soup.find_all('div', class_='lot-large-block-content'):
 
 img_pattern = r'https.*\.jpg'
 
-r = requests.get(lot2)
+r = requests.get(lot1)
 
 r.status_code
 
@@ -87,23 +87,47 @@ for item in soup.find_all('div', class_='item_content_img_single'):
     
 import json
 
-for item in soup.find_all('script', attrs={"type": "application/ld+json"}):
-#    print(item)
-#    print ("\n\n\n")
-#    print(f"{dir(item)}")
-#    print ("\n\n\n")
-#    print(item.contents)
-    print("\n\n\n Item Contents as json?")
-    b = json.loads(item.contents[0])
-    print(b)
-    print ("\n\n\n")    
-    print(b['image'])
-    print ("\n\n\n")
-    print(b['description'])
-    print ("\n\n\n")
-    print(b['offers']['priceCurrency'])
-    print(b['offers']['price'])
+columns2 = ['images', 'description', 'currency', 'price']
+tyf2 = pd.DataFrame(columns=columns2)
 
+# Will loop over tyf for each row...
+for item in soup.find_all('script', attrs={"type": "application/ld+json"}):
+    b = json.loads(item.contents[0])
+    row = pd.DataFrame(columns=columns2)
+    images = b['image']
+    description = b['description']
+    currency = b['offers']['priceCurrency']
+    price = b['offers']['price']
+    row = pd.DataFrame([images, description, currency, price],
+                       columns=columns2
+           )
+    tyf2 = tyf2.append(row)
+
+
+n=0
+for item in soup.find_all('script', attrs={"type": "application/ld+json"}):
+    n +=1
+print(n)
+
+
+
+#    
+##    print(item)
+##    print ("\n\n\n")
+##    print(f"{dir(item)}")
+##    print ("\n\n\n")
+##    print(item.contents)
+#    print("\n\n\n Item Contents as json?")
+#    b = json.loads(item.contents[0])
+#    print(b)
+#    print ("\n\n\n")    
+#    print(b['image'])
+#    print ("\n\n\n")
+#    print(b['description'])
+#    print ("\n\n\n")
+#    print(b['offers']['priceCurrency'])
+#    print(b['offers']['price'])
+#
 
 
 
