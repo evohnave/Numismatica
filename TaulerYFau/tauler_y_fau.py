@@ -47,16 +47,16 @@ for item in soup.find_all('div'):
             links = []
             for link in item.find_all('a'):
                 links.append(link.get('href'))
-            print(links)
+            #print(links)
 
             links = set(links)
-            print(links)
+            #print(links)
             link = links.pop()
             if link:
                 # Withdrawn lots may not have any links
                 # Get lot number from link
                 lot = re.search(lot_no_pattern, link)
-                print(lot)
+                #print(lot)
                 if lot:
                     lot = lot.groups()[0]
                 else:
