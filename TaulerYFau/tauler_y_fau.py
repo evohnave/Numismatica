@@ -9,6 +9,7 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import re
+import json
 
 base = 'https://www.tauleryfau.com/'
 
@@ -73,12 +74,9 @@ for item in soup.find_all('div'):
                 
                 tyf = tyf.append(row)
 
-
-
-del( columns,link,lot,lot_no_pattern, lot_pattern, row, tyf)
 img_pattern = r'https.*\.jpg'
 
-r = requests.get(lot2)
+r = requests.get(lot1)
 
 r.status_code
 
@@ -90,7 +88,6 @@ for item in soup.find_all('div', class_='item_content_img_single'):
     for link in item.find_all('img'):
         picture_links.add(link.get('src'))
     
-import json
 
 for item in soup.find_all('script', attrs={"type": "application/ld+json"}):
 #    print(item)
@@ -106,8 +103,12 @@ for item in soup.find_all('script', attrs={"type": "application/ld+json"}):
     print ("\n\n\n")
     print(b['description'])
     print ("\n\n\n")
-    print(b['description'])
+    print(b['offers']['priceCurrency'])
     print ("\n\n\n")
+    print(b['offers']['price'])
+    print ("\n\n\n")
+    
+
 
 
 
