@@ -39,43 +39,38 @@ columns = ['Lot', 'Link', 'Category']
 
 tyf = pd.DataFrame(columns=columns)
 
-for item in soup.find_all('div'):
-    # The items we want are in lot-large-block-content
-    if item.has_attr('class'):
-        if 'lot-large-block-content' in item['class']:
-            # Get the link
-            links = []
-            for link in item.find_all('a'):
-                links.append(link.get('href'))
-            #print(links)
-
-            links = set(links)
-            #print(links)
-            link = links.pop()
-            if link:
-                # Withdrawn lots may not have any links
-                # Get lot number from link
-                lot = re.search(lot_no_pattern, link)
-                #print(lot)
-                if lot:
-                    lot = lot.groups()[0]
-                else:
-                    lot = -1
-                    break
-                # Get category from link
-                category = re.search(category_pattern, link)
-                if category:
-                    category = category.groups()[0]
-                else:
-                    category = "Not listed"
-                # add to df
-                row = pd.DataFrame([[lot, link, category]], columns=columns)
-                
-                tyf = tyf.append(row)
+for item in soup.find_all('div', class_='lot-large-block-content'):
+    links = []
+    for link in item.find_all('a'):
+        links.append(link.get('href'))
+    #print(links)
+    
+    links = set(links)
+    #print(links)
+    link = links.pop()
+    if link:
+        # Withdrawn lots may not have any links
+        # Get lot number from link
+        lot = re.search(lot_no_pattern, link)
+        #print(lot)
+        if lot:
+            lot = lot.groups()[0]
+        else:
+            lot = -1
+            break
+        # Get category from link
+        category = re.search(category_pattern, link)
+        if category:
+            category = category.groups()[0]
+        else:
+            category = "Not listed"
+        # add to df
+        row = pd.DataFrame([[lot, link, category]], columns=columns)
+        
+        tyf = tyf.append(row)
 
 
 
-del( columns,link,lot,lot_no_pattern, lot_pattern, row, tyf)
 img_pattern = r'https.*\.jpg'
 
 r = requests.get(lot2)
@@ -106,8 +101,8 @@ for item in soup.find_all('script', attrs={"type": "application/ld+json"}):
     print ("\n\n\n")
     print(b['description'])
     print ("\n\n\n")
-    print(b['description'])
-    print ("\n\n\n")
+    print(b['offers']['priceCurrency'])
+    print(b['offers']['price'])
 
 
 
