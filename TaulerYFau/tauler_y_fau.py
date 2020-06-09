@@ -10,8 +10,9 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import re
 import json
+from time import sleep
 
-base = 'https://www.tauleryfau.com/'
+base = 'https://www.tauleryfau.com'
 
 lot1img = 'img/thumbs/700/001/997/001-997-27_01.jpg'
 
@@ -64,120 +65,138 @@ for item in soup.find_all('div', class_='lot-large-block-content'):
 
 tyf.set_index('Lot', inplace=True)
 
+for lot in tyf.index:
+    coin_url = base + tyf.Link.loc[lot]
+    r = requests.get(coin_url)
+    if r.status_code == 200:
+        soup = BeautifulSoup(r.text, 'html.parser')   
 
+        for item in soup.find_all('script', 
+                                  attrs={"type": "application/ld+json"}):
+            b = json.loads(item.contents[0])
+            tyf.images.loc[lot] = b['image']
+            tyf.description.loc[lot] = b['description']
+            tyf.currency.loc[lot] = b['offers']['priceCurrency']
+            tyf.price.loc[lot] = b['offers']['price']
+    sleep(5)
 
-
-img_pattern = r'https.*\.jpg'
-
-r = requests.get(lot1)
-
-r.status_code
-
-soup = BeautifulSoup(r.text, 'html.parser')
-
-columns2 = ['images', 'description', 'currency', 'price']
-tyf2 = pd.DataFrame(columns=columns2)
-
-columns2 = ['images', 'description', 'currency', 'price']
-tyf2 = pd.DataFrame(columns=columns2)
-
-# Will loop over tyf for each row...
-for item in soup.find_all('script', attrs={"type": "application/ld+json"}):
-    b = json.loads(item.contents[0])
-    row = pd.DataFrame(columns=columns2)
-    images = b['image']
-    description = b['description']
-    currency = b['offers']['priceCurrency']
-    price = b['offers']['price']
-    row = pd.DataFrame([images, description, currency, price],
-                       columns=columns2
-           )
-    tyf2 = tyf2.append(row)
-
-
-n=0
-for item in soup.find_all('script', attrs={"type": "application/ld+json"}):
-    n +=1
-print(n)
-
-
-
-#    
-##    print(item)
-##    print ("\n\n\n")
-##    print(f"{dir(item)}")
-##    print ("\n\n\n")
-##    print(item.contents)
-#    print("\n\n\n Item Contents as json?")
-#    b = json.loads(item.contents[0])
-#    print(b)
-#    print ("\n\n\n")    
-#    print(b['image'])
-#    print ("\n\n\n")
-#    print(b['description'])
-#    print ("\n\n\n")
-<<<<<<< HEAD
-#    print(b['offers']['priceCurrency'])
-#    print(b['offers']['price'])
-#
-=======
-#    print(item.contents)
-    # print("\n\n\n Item Contents as json?")
-    b = json.loads(item.contents[0])
-    # print(b)
-    # print ("\n\n\n")    
-    images = b['image']
-    # print ("\n\n\n")
-    description = b['description']
-    # print ("\n\n\n")
-    currency = b['offers']['priceCurrency']
-    # print ("\n\n\n")
-    price = b['offers']['price']
-    # print ("\n\n\n")
-    row = pd.DataFrame([[images, description, currency, price]],
-                       columns=columns2)
-    print(row)
+            
     
-
-
->>>>>>> d3e76bf62ec4c20dfe0f6b6f4a1182e89a8ebc15
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
+#    break
+#
+#
+#img_pattern = r'https.*\.jpg'
+#
+#r = requests.get(lot1)
+#
+#r.status_code
+#
+#soup = BeautifulSoup(r.text, 'html.parser')
+#
+#columns2 = ['images', 'description', 'currency', 'price']
+#tyf2 = pd.DataFrame(columns=columns2)
+#
+#columns2 = ['images', 'description', 'currency', 'price']
+#tyf2 = pd.DataFrame(columns=columns2)
+#
+## Will loop over tyf for each row...
+#for item in soup.find_all('script', attrs={"type": "application/ld+json"}):
+#    b = json.loads(item.contents[0])
+#    row = pd.DataFrame(columns=columns2)
+#    images = b['image']
+#    description = b['description']
+#    currency = b['offers']['priceCurrency']
+#    price = b['offers']['price']
+#    row = pd.DataFrame([images, description, currency, price],
+#                       columns=columns2
+#           )
+#    tyf2 = tyf2.append(row)
+#
+#
+#n=0
+#for item in soup.find_all('script', attrs={"type": "application/ld+json"}):
+#    n +=1
+#print(n)
+#
+#
+#
+##    
+###    print(item)
+###    print ("\n\n\n")
+###    print(f"{dir(item)}")
+###    print ("\n\n\n")
+###    print(item.contents)
+##    print("\n\n\n Item Contents as json?")
+##    b = json.loads(item.contents[0])
+##    print(b)
+##    print ("\n\n\n")    
+##    print(b['image'])
+##    print ("\n\n\n")
+##    print(b['description'])
+##    print ("\n\n\n")
+#<<<<<<< HEAD
+##    print(b['offers']['priceCurrency'])
+##    print(b['offers']['price'])
+##
+#=======
+##    print(item.contents)
+#    # print("\n\n\n Item Contents as json?")
+#    b = json.loads(item.contents[0])
+#    # print(b)
+#    # print ("\n\n\n")    
+#    images = b['image']
+#    # print ("\n\n\n")
+#    description = b['description']
+#    # print ("\n\n\n")
+#    currency = b['offers']['priceCurrency']
+#    # print ("\n\n\n")
+#    price = b['offers']['price']
+#    # print ("\n\n\n")
+#    row = pd.DataFrame([[images, description, currency, price]],
+#                       columns=columns2)
+#    print(row)
+#    
+#
+#
+#>>>>>>> d3e76bf62ec4c20dfe0f6b6f4a1182e89a8ebc15
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
