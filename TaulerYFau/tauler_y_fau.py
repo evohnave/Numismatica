@@ -73,11 +73,14 @@ for lot in tyf.index:
 
         for item in soup.find_all('script', 
                                   attrs={"type": "application/ld+json"}):
-            b = json.loads(item.contents[0])
-            tyf.images.loc[lot] = b['image']
-            tyf.description.loc[lot] = b['description']
-            tyf.currency.loc[lot] = b['offers']['priceCurrency']
-            tyf.price.loc[lot] = b['offers']['price']
+            try:
+                b = json.loads(item.contents[0])
+                tyf.images.loc[lot] = b['image']
+                tyf.description.loc[lot] = b['description']
+                tyf.currency.loc[lot] = b['offers']['priceCurrency']
+                tyf.price.loc[lot] = b['offers']['price']
+            except JSONDecodeError:
+                tyf.description.loc[lot] = "Error - probably quotes inside JSON"
     sleep(5)
 
             
