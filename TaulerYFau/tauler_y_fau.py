@@ -65,42 +65,8 @@ for item in soup.find_all('div', class_='lot-large-block-content'):
 tyf.set_index('Lot', inplace=True)
 
 
-tyf = pd.DataFrame(columns=columns)
-
-for item in soup.find_all('div', class_='lot-large-block-content'):
-    links = []
-    for link in item.find_all('a'):
-        links.append(link.get('href'))
-    #print(links)
-    
-    links = set(links)
-    #print(links)
-    link = links.pop()
-    if link:
-        # Withdrawn lots may not have any links
-        # Get lot number from link
-        lot = re.search(lot_no_pattern, link)
-        #print(lot)
-        if lot:
-            lot = lot.groups()[0]
-        else:
-            lot = -1
-            break
-        # Get category from link
-        category = re.search(category_pattern, link)
-        if category:
-            category = category.groups()[0]
-        else:
-            category = "Not listed"
-        # add to df
-        row = pd.DataFrame([[lot, link, category]], columns=columns)
-        
-        tyf = tyf.append(row)
 
 
-
-=======
->>>>>>> d3e76bf62ec4c20dfe0f6b6f4a1182e89a8ebc15
 img_pattern = r'https.*\.jpg'
 
 r = requests.get(lot1)
