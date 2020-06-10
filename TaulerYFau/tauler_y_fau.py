@@ -79,9 +79,9 @@ for lot in tyf.index:
                 tyf.description.loc[lot] = b['description']
                 tyf.currency.loc[lot] = b['offers']['priceCurrency']
                 tyf.price.loc[lot] = b['offers']['price']
-            except JSONDecodeError:
+            except json.JSONDecodeError:
                 tyf.description.loc[lot] = "Error - probably quotes inside JSON"
-    sleep(5)
+    sleep(3)
 
             
     
