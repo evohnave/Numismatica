@@ -149,7 +149,7 @@ for lot in tyf.index:
     sleep(3)
 
 # Save current efforts
-save_df = Path(r'C:/Users/Cire/Downloads/TaulerYFau60/Auction60.gzip')
+save_df = Path(r'C:/Users/Cire/Downloads/TaulerYFau60/20200624_Auction_000060.gzip')
 tyf.to_parquet(save_df, compression='gzip')
 
 # Saving images to disk
