@@ -62,6 +62,30 @@ r.status_code
 
 soup = BeautifulSoup(r.text, 'html.parser')
 
+row_pages = soup.find_all('div', class_='row_pages')
+
+page_links = [link.get('href') 
+              for page in row_pages 
+              for link in page.find_all('a')]
+# Create basic auction info 
+columns = ['auctionName', 'sessionInfo', 'raw']
+sarc = pd.DataFrame(columns=columns)
+spans = soup.find_all('span', class_='title')
+for n, span in enumerate(spans):
+    span_strings = list(span.strings)
+    #print(f"debug span_strings {span_strings}")
+    auctionName = span_strings[0]
+    #print(f"debug auctionName {auctionName}")
+    sessionInfo = span_strings[1]
+    #print(f"debug sessionInfo {sessionInfo}")
+    raw = str(span)
+    #print(f"debug raw {str(span)}")
+    row = pd.DataFrame([[auctionName, sessionInfo, raw]],
+                       columns=columns)
+    sarc = sarc.append(row)
+
+
+
 lot_pattern = r'Lot\s+(\d{1,4})'
 lot_no_pattern = r'\/(\d{1,4})-.*$'
 category_pattern = r'\/\d{1,4}-\d{1,4}-(.*$)'
