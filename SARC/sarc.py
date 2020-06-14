@@ -52,8 +52,6 @@ def download(file_name, from_link, save_to_path):
     else:
         return {"statusCode": r.status_code}
 
-
-
 finished_auctions = 'https://www.sarc.auction/auctionlist.aspx?dv=2&so=2&ps=200'
 
 r = requests.get(finished_auctions)
@@ -84,7 +82,53 @@ for n, span in enumerate(spans):
                        columns=columns)
     sarc = sarc.append(row)
 
+# Save sarc as sarc_auction_info.gzip efforts
+save_df = Path(r'C:/Users/Cire/Downloads/SARC/20200614_sarc_auction_info.gzip')
+sarc.to_parquet(save_df, compression='gzip')
 
+test_page_link = page_links[46]
+# picked # 46 since it has a Danishmendid I bought, lot 528
+
+r = requests.get(test_page_link)
+r.status_code
+soup = BeautifulSoup(r.text, 'html.parser')
+items = soup.find_all('div', class_='gridItem')
+
+len(items)
+columns = ['lotnum', 'raw', 'partial_description', 'currency', 'total',
+           'quantity', 'hammer', 'premium', 'estimates', 'low_est',
+           'hi_est']
+sarc_lots = pd.DataFrame(columns=columns)
+for item in items:
+    raw = item
+    lotnum = int(item.find('span', class_='gridView_heading')
+                     .find('i', class_ = 'gridView_lotnum')
+                     .text
+                     .rstrip(' - ')
+                     )
+    description = item.find('div', 
+                            class_='description gridView_description').text
+    currency = 'USD'
+    winbid = item.find('div', 
+                       class_='gridView_winningbid linkinfo bidinfo').text
+    win_patt = r'Sold for \((\d+.*\.00)\s*\+?\s*(\d+.*\.00)?\)\s*x\s*(\d*)\s*=\s*(\d+.*\.00)'
+    win = re.search(win_patt, winbid)
+    if win:
+        hammer, premium, quantity, total = win.groups()
+    else:
+        hammer, premium, quantity, total = None
+    est_patt = r'Estimates\s*:\s*(\d+.*\.00)\s*-\s*(\d+.*\.00)?'
+    estimates = item.find('div', class_='startpriceestimates').text
+    low_est, hi_est = re.search(est_patt, estimates).groups()
+    info = item.find('a')
+    lot_link = info.get('href')
+    thumbnail = info.find('img').get('src').split('?')[0]
+    row = pd.DataFrame([[lotnum, raw, description, currency, total, quantity, 
+                         hammer, premium, estimates, low_est, hi_est]],
+                       columns=columns
+                        )
+    sarc_lots = sarc_lots.append(row)
+    
 
 lot_pattern = r'Lot\s+(\d{1,4})'
 lot_no_pattern = r'\/(\d{1,4})-.*$'
