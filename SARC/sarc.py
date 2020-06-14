@@ -116,7 +116,7 @@ for item in items:
     if win:
         hammer, premium, quantity, total = win.groups()
     else:
-        hammer, premium, quantity, total = None
+        hammer = premium = quantity = total = None
     est_patt = r'Estimates\s*:\s*(\d+.*\.00)\s*-\s*(\d+.*\.00)?'
     estimates = item.find('div', class_='startpriceestimates').text
     low_est, hi_est = re.search(est_patt, estimates).groups()
