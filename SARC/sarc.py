@@ -132,7 +132,7 @@ for item in items:
                         )
     sarc_lots = sarc_lots.append(row)
     
-
+#------------------------- Works above here... below is old from tyf ---------
 lot_pattern = r'Lot\s+(\d{1,4})'
 lot_no_pattern = r'\/(\d{1,4})-.*$'
 category_pattern = r'\/\d{1,4}-\d{1,4}-(.*$)'
