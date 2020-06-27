@@ -97,7 +97,7 @@ items = soup.find_all('div', class_='gridItem')
 len(items)
 columns = ['lotnum', 'raw', 'partial_description', 'currency', 'total',
            'quantity', 'hammer', 'premium', 'estimates', 'low_est',
-           'hi_est']
+           'hi_est', 'lot_link']
 sarc_lots = pd.DataFrame(columns=columns)
 for item in items:
     raw = item
@@ -109,10 +109,13 @@ for item in items:
     description = item.find('div', 
                             class_='description gridView_description').text
     currency = 'USD'
-    winbid = item.find('div', 
-                       class_='gridView_winningbid linkinfo bidinfo').text
-    win_patt = r'Sold for \((\d+.*\.00)\s*\+?\s*(\d+.*\.00)?\)\s*x\s*(\d*)\s*=\s*(\d+.*\.00)'
-    win = re.search(win_patt, winbid)
+    try:
+        winbid = item.find('div', 
+                           class_='gridView_winningbid linkinfo bidinfo').text
+        win_patt = r'Sold for \((\d+.*\.00)\s*\+?\s*(\d+.*\.00)?\)\s*x\s*(\d*)\s*=\s*(\d+.*\.00)'
+        win = re.search(win_patt, winbid)
+    except AttributeError:
+        win = None
     if win:
         hammer, premium, quantity, total = win.groups()
     else:
@@ -124,7 +127,7 @@ for item in items:
     lot_link = info.get('href')
     thumbnail = info.find('img').get('src').split('?')[0]
     row = pd.DataFrame([[lotnum, raw, description, currency, total, quantity, 
-                         hammer, premium, estimates, low_est, hi_est]],
+                         hammer, premium, estimates, low_est, hi_est, lot_link]],
                        columns=columns
                         )
     sarc_lots = sarc_lots.append(row)
