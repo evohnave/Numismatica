@@ -14,32 +14,7 @@ from time import sleep
 from pathlib import Path
 import shutil
 
-def fix_desc(bad_json):
-    ''' Attempt to fix description '''
-    desc_pattern = r'\"description\":\s*\"(.*)\",\r\n'
-#    image_pattern = r'\"image.*\r\n'
-#    currency_pattern = r'\"priceCurrency.*\r\n'
-#    price_pattern = r'\"price\".*\r\n'
-    ret = {}
-    ret['offers'] = {}
-    # description
-    grp = re.search(desc_pattern, bad_json)
-    if grp:
-        ret['description'] = grp.groups()[0]
-    else:
-        ret['description'] = 'Unable to parse'
-    new_json = bad_json.replace(grp.group(), "")
-    try:
-        dct = json.loads(new_json)
-        ret['image'] = dct['image']
-        ret['offers']['priceCurrency'] = dct['offers']['priceCurrency']
-        ret['offers']['price'] = dct['offers']['price']
-    except json.JSONDecodeError:
-        ret['image'] = []
-        ret['offers']['priceCurrency'] = 'N/A'
-        ret['offers']['price'] = None
-    return ret
-
+#------------------------------------------------------------------------------
 def download(file_name, from_link, save_to_path):
     ''' Downloads (image) file '''
     r = requests.get(from_link, stream=True)
@@ -51,6 +26,8 @@ def download(file_name, from_link, save_to_path):
         return {"statusCode": 200, "path": str(save_to_path.joinpath(file_name))}
     else:
         return {"statusCode": r.status_code}
+#------------------------------------------------------------------------------
+        
 
 finished_auctions = 'https://www.sarc.auction/auctionlist.aspx?dv=2&so=2&ps=200'
 
@@ -81,6 +58,20 @@ for n, span in enumerate(spans):
     row = pd.DataFrame([[auctionName, sessionInfo, raw]],
                        columns=columns)
     sarc = sarc.append(row)
+# Get auction name
+#  First, strip off Stephen Album then get rid of anything like w/#33
+# Then replace Internet-Only with '10000'
+sarc['auction'] = sarc.auctionName.replace(
+    to_replace=r'^Stephen Album Rare Coins (-|\|) ',
+    value='', regex=True
+    ).replace(to_replace=r'\s*\|.*$', value='', regex=True
+    ).replace(to_replace=r'^Internet-Only Auction #',
+    value='10000', regex=True
+    ).replace(to_replace=r'^Auction ', value='0000', regex=True
+    ).replace(to_replace=r'00009', value='000009', regex=True)
+
+
+
 
 # Save sarc as sarc_auction_info.gzip efforts
 save_df = Path(r'C:/Users/Cire/Downloads/SARC/20200614_sarc_auction_info.gzip')
@@ -131,7 +122,21 @@ for item in items:
                        columns=columns
                         )
     sarc_lots = sarc_lots.append(row)
-    
+
+# Now go get all the info from each lot... can skip several items, but images
+#   and description are probably needed
+
+# iterate over the lot_links
+#   But I'm not doing it for now... just do one
+
+r = requests.get(lot_link)
+r.status_code
+soup = BeautifulSoup(r.text, 'html.parser')
+item = soup.find('ul', id="item_media_thumbnails")
+images_as = item.find_all('a')
+images_links = [a.get('href') for a in images_as]
+description = soup.find('span', id="cphBody_cbItemDescription").string
+
 #------------------------- Works above here... below is old from tyf ---------
 lot_pattern = r'Lot\s+(\d{1,4})'
 lot_no_pattern = r'\/(\d{1,4})-.*$'
