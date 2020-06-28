@@ -74,8 +74,8 @@ sarc['auction'] = sarc.auctionName.replace(
 
 
 # Save sarc as sarc_auction_info.gzip efforts
-save_df = Path(r'C:/Users/Cire/Downloads/SARC/20200614_sarc_auction_info.gzip')
-sarc.to_parquet(save_df, compression='gzip')
+# save_df = Path(r'C:/Users/Cire/Downloads/SARC/20200614_sarc_auction_info.gzip')
+# sarc.to_parquet(save_df, compression='gzip')
 
 test_page_link = page_links[46]
 # picked # 46 since it has a Danishmendid I bought, lot 528
