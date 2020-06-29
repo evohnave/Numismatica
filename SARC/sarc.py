@@ -46,12 +46,19 @@ page_links = [link.get('href')
 columns = ['auctionName', 'sessionInfo', 'raw']
 sarc = pd.DataFrame(columns=columns)
 spans = soup.find_all('span', class_='title')
+session_pattern = r'.*Lots\s+(\d{1,4})-(\d{1,4}).*'
+
 for n, span in enumerate(spans):
     span_strings = list(span.strings)
     #print(f"debug span_strings {span_strings}")
     auctionName = span_strings[0]
     #print(f"debug auctionName {auctionName}")
     sessionInfo = span_strings[1]
+    try:
+        sessionStart, sessionStop = re.search(session_pattern, 
+                                              sessionInfo).groups()
+    except AttributeError:
+        sessionStart = sessionStop = None
     #print(f"debug sessionInfo {sessionInfo}")
     raw = str(span)
     #print(f"debug raw {str(span)}")
@@ -69,9 +76,6 @@ sarc['auction'] = sarc.auctionName.replace(
     value='10000', regex=True
     ).replace(to_replace=r'^Auction ', value='0000', regex=True
     ).replace(to_replace=r'00009', value='000009', regex=True)
-
-
-
 
 # Save sarc as sarc_auction_info.gzip efforts
 # save_df = Path(r'C:/Users/Cire/Downloads/SARC/20200614_sarc_auction_info.gzip')
