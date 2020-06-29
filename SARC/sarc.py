@@ -83,6 +83,11 @@ sarc['auction_number'] = sarc.auction_name.replace(
     ).replace(to_replace=r'^Auction ', value='0000', regex=True
     ).replace(to_replace=r'00009', value='000009', regex=True)
 
+# Up to this point, sarc is a dataframe with information about all auctions by
+#   session, and page_links is a list of links to the pages for each group of
+#   (up to 50) lots per page for each session
+              
+              
 # Save sarc as sarc_auction_info.gzip efforts
 # save_df = Path(r'C:/Users/Cire/Downloads/SARC/20200614_sarc_auction_info.gzip')
 # sarc.to_parquet(save_df, compression='gzip')
