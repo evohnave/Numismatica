@@ -43,10 +43,11 @@ page_links = [link.get('href')
               for page in row_pages 
               for link in page.find_all('a')]
 # Create basic auction info 
-columns = ['auctionName', 'sessionInfo', 'raw']
+columns = ['auctionName', 'sessionInfo', 'raw', 'session',
+           'sessionsStart', 'sessionsStop']
 sarc = pd.DataFrame(columns=columns)
 spans = soup.find_all('span', class_='title')
-session_pattern = r'.*Lots\s+(\d{1,4})-(\d{1,4}).*'
+session_lots_pattern = r'.*Lots\s+(\d{1,4})-(\d{1,4}).*'
 
 for n, span in enumerate(spans):
     span_strings = list(span.strings)
@@ -55,20 +56,22 @@ for n, span in enumerate(spans):
     #print(f"debug auctionName {auctionName}")
     sessionInfo = span_strings[1]
     try:
-        sessionStart, sessionStop = re.search(session_pattern, 
+        sessionStart, sessionStop = re.search(session_lots_pattern, 
                                               sessionInfo).groups()
+        session = re.search(r'(Session [A-Z])', sessionInfo).group()
     except AttributeError:
         sessionStart = sessionStop = None
     #print(f"debug sessionInfo {sessionInfo}")
     raw = str(span)
     #print(f"debug raw {str(span)}")
-    row = pd.DataFrame([[auctionName, sessionInfo, raw]],
+    row = pd.DataFrame([[auctionName, sessionInfo, raw, session, sessionStart,
+                         sessionStop]],
                        columns=columns)
     sarc = sarc.append(row)
 # Get auction name
 #  First, strip off Stephen Album then get rid of anything like w/#33
-# Then replace Internet-Only with '10000'
-sarc['auction'] = sarc.auctionName.replace(
+# Then replace Internet-Only with '10000', special case for auction 9
+sarc['auction_number'] = sarc.auctionName.replace(
     to_replace=r'^Stephen Album Rare Coins (-|\|) ',
     value='', regex=True
     ).replace(to_replace=r'\s*\|.*$', value='', regex=True
