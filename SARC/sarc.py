@@ -71,12 +71,13 @@ for n, span in enumerate(spans):
 # Get auction name
 #  First, strip off Stephen Album then get rid of anything like w/#33
 # Then replace Internet-Only with '10000', special case for auction 9
-sarc['auction_number'] = sarc.auctionName.replace(
-    to_replace=r'^Stephen Album Rare Coins (-|\|) ',
-    value='', regex=True
-    ).replace(to_replace=r'\s*\|.*$', value='', regex=True
-    ).replace(to_replace=r'^Internet-Only Auction #',
-    value='10000', regex=True
+
+sarc['auction_name'] = sarc.auctionName.replace(
+    to_replace=r'^Stephen Album Rare Coins (-|\|) ', value='', regex=True
+    ).replace(to_replace=r'\s*\|.*$', value='', regex=True)
+
+sarc['auction_number'] = sarc.auction_name.replace(
+    to_replace=r'^Internet-Only Auction #', value='10000', regex=True
     ).replace(to_replace=r'^Auction ', value='0000', regex=True
     ).replace(to_replace=r'00009', value='000009', regex=True)
 
