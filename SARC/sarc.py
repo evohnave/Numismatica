@@ -39,6 +39,8 @@ soup = BeautifulSoup(r.text, 'html.parser')
 
 row_pages = soup.find_all('div', class_='row_pages')
 
+# page_links are the links to the pages... should be in the order they are in 
+#  the soup, but no real guarantee
 page_links = [link.get('href') 
               for page in row_pages 
               for link in page.find_all('a')]
@@ -60,7 +62,7 @@ for n, span in enumerate(spans):
                                               sessionInfo).groups()
         session = re.search(r'(Session [A-Z])', sessionInfo).group()
     except AttributeError:
-        sessionStart = sessionStop = None
+        sessionStart = sessionStop = session = None
     #print(f"debug sessionInfo {sessionInfo}")
     raw = str(span)
     #print(f"debug raw {str(span)}")
