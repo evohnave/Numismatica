@@ -93,7 +93,7 @@ sarc['auction_number'] = sarc.auction_name.replace(
 # sarc.to_parquet(save_df, compression='gzip')
 
 test_page_link = page_links[61]
-# picked # 46 since it has a Danishmendid I bought, lot 528
+# picked # 61 since it has a Danishmendid I bought, lot 528
 
 r = requests.get(test_page_link)
 r.status_code
